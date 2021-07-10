@@ -1,0 +1,4 @@
+rootProject.name = 'kafka-shore'
+
+include 'kafka-core', 'kafka-producer', 'kafka-consumer'
+
