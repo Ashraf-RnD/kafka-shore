@@ -16,14 +16,14 @@ import org.springframework.util.concurrent.ListenableFuture;
 @RequiredArgsConstructor
 public class KafkaProducerService {
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
 
     public void sendToKafka(PublishMessageRequest data) {
 
 
-        ListenableFuture<SendResult<String, Object>> future = kafkaTemplate.send(createRecord(data));
-        future.addCallback(new KafkaSendCallback<String, Object>() {
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(createRecord(data));
+        future.addCallback(new KafkaSendCallback<String, String>() {
 
             @Override
             public void onFailure(KafkaProducerException ex) {
@@ -31,17 +31,18 @@ public class KafkaProducerService {
             }
 
             @Override
-            public void onSuccess(SendResult<String, Object> result) {
+            public void onSuccess(SendResult<String, String> result) {
                 handleSuccess(result);
             }
         });
     }
 
-    private ProducerRecord<String, Object> createRecord(PublishMessageRequest data) {
+    private ProducerRecord<String, String> createRecord(PublishMessageRequest data) {
         return new ProducerRecord(data.getTopicName(),1,System.currentTimeMillis(),"testKey",data.getMessage());
+//        return new ProducerRecord(data.getTopicName(), 1, data.getMessage());
     }
 
-    private void handleSuccess(SendResult<String, Object> result) {
+    private void handleSuccess(SendResult<String, String> result) {
 
         log.info("handleSuccess:: value: {}", result.getProducerRecord().value());
     }
